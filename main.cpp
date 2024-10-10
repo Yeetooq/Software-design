@@ -7,7 +7,7 @@ int main() {
  cout << "Enter your name: ";
  cin >> name;
  cout << "Hello, " << name << "!\n";
- cout << "Nice to see you learning Git\n";
+ cout << "Nice to see you learning Git123\n";
  system("pause");
  return 0;
 } 
