@@ -1,0 +1,19 @@
+mode: set
+autoservice/cmd/main.go:10.13,13.16 2 1
+autoservice/cmd/main.go:13.16,15.3 1 0
+autoservice/cmd/main.go:16.2,22.6 3 1
+autoservice/cmd/main.go:22.6,41.17 17 1
+autoservice/cmd/main.go:42.10,43.34 1 0
+autoservice/cmd/main.go:44.10,45.32 1 0
+autoservice/cmd/main.go:46.10,47.33 1 0
+autoservice/cmd/main.go:48.10,49.37 1 0
+autoservice/cmd/main.go:50.10,51.35 1 0
+autoservice/cmd/main.go:52.10,53.36 1 0
+autoservice/cmd/main.go:54.10,55.33 1 0
+autoservice/cmd/main.go:56.10,57.31 1 0
+autoservice/cmd/main.go:58.10,59.32 1 0
+autoservice/cmd/main.go:60.11,61.28 1 0
+autoservice/cmd/main.go:62.11,63.31 1 0
+autoservice/cmd/main.go:64.11,67.32 3 0
+autoservice/cmd/main.go:68.10,69.10 1 1
+autoservice/cmd/main.go:70.11,71.80 1 0

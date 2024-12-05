@@ -1,0 +1,763 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>cmd: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">autoservice/cmd/main.go (0.0%)</option>
+				
+				<option value="file1">autoservice/internal/db/db.go (0.0%)</option>
+				
+				<option value="file2">autoservice/internal/handlers/client_handler.go (10.8%)</option>
+				
+				<option value="file3">autoservice/internal/handlers/order_handler.go (10.9%)</option>
+				
+				<option value="file4">autoservice/internal/handlers/part_handler.go (11.9%)</option>
+				
+				<option value="file5">autoservice/internal/utils/validators.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "autoservice/internal/db"
+        "autoservice/internal/handlers"
+        "fmt"
+        "log"
+)
+
+func main() <span class="cov0" title="0">{
+        // Открываем или создаем базу данных
+        dbConn, err := db.Open()
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+        <span class="cov0" title="0">defer dbConn.Close()
+
+        // Создаем таблицы, если они не существуют
+        db.CreateTables(dbConn)
+
+        // Основной цикл программы
+        for </span><span class="cov0" title="0">{
+                fmt.Println("\nВыберите действие:")
+                fmt.Println("1. Добавить клиента")
+                fmt.Println("2. Добавить деталь")
+                fmt.Println("3. Добавить заказ")
+                fmt.Println("4. Удалить клиента")
+                fmt.Println("5. Удалить деталь")
+                fmt.Println("6. Удалить заказ")
+                fmt.Println("7. Вывести всех клиентов")
+                fmt.Println("8. Вывести все детали")
+                fmt.Println("9. Вывести все заказы")
+                fmt.Println("10. Очистить базу данных")
+                fmt.Println("11. Заполнить базу данных шаблонными данными")
+                fmt.Println("12. Вывести все данные")
+                fmt.Println("0. Выход")
+
+                var choice int
+                fmt.Scanln(&amp;choice)
+
+                switch choice </span>{
+                case 1:<span class="cov0" title="0">
+                        handlers.AddClientMenu(dbConn)</span>
+                case 2:<span class="cov0" title="0">
+                        handlers.AddPartMenu(dbConn)</span>
+                case 3:<span class="cov0" title="0">
+                        handlers.AddOrderMenu(dbConn)</span>
+                case 4:<span class="cov0" title="0">
+                        handlers.DeleteClientMenu(dbConn)</span>
+                case 5:<span class="cov0" title="0">
+                        handlers.DeletePartMenu(dbConn)</span>
+                case 6:<span class="cov0" title="0">
+                        handlers.DeleteOrderMenu(dbConn)</span>
+                case 7:<span class="cov0" title="0">
+                        handlers.PrintClients(dbConn)</span>
+                case 8:<span class="cov0" title="0">
+                        handlers.PrintParts(dbConn)</span>
+                case 9:<span class="cov0" title="0">
+                        handlers.PrintOrders(dbConn)</span>
+                case 10:<span class="cov0" title="0">
+                        db.ClearDatabase(dbConn)</span>
+                case 11:<span class="cov0" title="0">
+                        db.PopulateDatabase(dbConn)</span>
+                case 12:<span class="cov0" title="0">
+                        handlers.PrintClients(dbConn)
+                        handlers.PrintParts(dbConn)
+                        handlers.PrintOrders(dbConn)</span>
+                case 0:<span class="cov0" title="0">
+                        return</span>
+                default:<span class="cov0" title="0">
+                        fmt.Println("Неверный выбор. Попробуйте снова.")</span>
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package db
+
+import (
+        "autoservice/internal/models"
+        "database/sql"
+        "fmt"
+        "log"
+
+        _ "github.com/mattn/go-sqlite3"
+)
+
+// Open открывает соединение с базой данных
+func Open() (*sql.DB, error) <span class="cov0" title="0">{
+        db, err := sql.Open("sqlite3", "./autoservice.db")
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">return db, nil</span>
+}
+
+// CreateTables создает таблицы в базе данных, если они не существуют
+func CreateTables(db *sql.DB) <span class="cov0" title="0">{
+        createClientsTable := `
+        CREATE TABLE IF NOT EXISTS clients (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                last_name TEXT,
+                first_name TEXT,
+                middle_name TEXT,
+                phone TEXT
+        );`
+
+        createPartsTable := `
+        CREATE TABLE IF NOT EXISTS parts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                description TEXT,
+                price REAL
+        );`
+
+        createOrdersTable := `
+        CREATE TABLE IF NOT EXISTS orders (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                client_id INTEGER,
+                part_id INTEGER,
+                quantity INTEGER,
+                total_cost REAL,
+                FOREIGN KEY (client_id) REFERENCES clients(id),
+                FOREIGN KEY (part_id) REFERENCES parts(id)
+        );`
+
+        _, err := db.Exec(createClientsTable)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+
+        <span class="cov0" title="0">_, err = db.Exec(createPartsTable)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+
+        <span class="cov0" title="0">_, err = db.Exec(createOrdersTable)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+
+        // Обновляем структуру таблицы clients, если необходимо
+        <span class="cov0" title="0">updateClientsTable := `
+        ALTER TABLE clients ADD COLUMN last_name TEXT;
+        ALTER TABLE clients ADD COLUMN first_name TEXT;
+        ALTER TABLE clients ADD COLUMN middle_name TEXT;
+        `
+        _, err = db.Exec(updateClientsTable)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+        }</span>
+}
+
+// ClearDatabase очищает базу данных
+func ClearDatabase(db *sql.DB) <span class="cov0" title="0">{
+        clearClients := `DELETE FROM clients`
+        clearParts := `DELETE FROM parts`
+        clearOrders := `DELETE FROM orders`
+
+        _, err := db.Exec(clearClients)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+
+        <span class="cov0" title="0">_, err = db.Exec(clearParts)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+
+        <span class="cov0" title="0">_, err = db.Exec(clearOrders)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+
+        // Сброс автоинкремента для таблиц clients, parts и orders
+        <span class="cov0" title="0">_, err = db.Exec("DELETE FROM sqlite_sequence WHERE name = 'clients'")
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+
+        <span class="cov0" title="0">_, err = db.Exec("DELETE FROM sqlite_sequence WHERE name = 'parts'")
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+
+        <span class="cov0" title="0">_, err = db.Exec("DELETE FROM sqlite_sequence WHERE name = 'orders'")
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+
+        <span class="cov0" title="0">fmt.Println("База данных успешно очищена.")</span>
+}
+
+// PopulateDatabase заполняет базу данных шаблонными данными
+func PopulateDatabase(db *sql.DB) <span class="cov0" title="0">{
+        // Добавляем 5 клиентов
+        clients := []models.Client{
+                {LastName: "Иванов", FirstName: "Иван", MiddleName: "Иванович", Phone: "81234567890"},
+                {LastName: "Петров", FirstName: "Петр", MiddleName: "Петрович", Phone: "80987654321"},
+                {LastName: "Сидоров", FirstName: "Сидор", MiddleName: "Сидорович", Phone: "81122334455"},
+                {LastName: "Смирнов", FirstName: "Алексей", MiddleName: "Сергеевич", Phone: "85566778899"},
+                {LastName: "Кузнецов", FirstName: "Дмитрий", MiddleName: "Анатольевич", Phone: "89988776655"},
+        }
+        for _, client := range clients </span><span class="cov0" title="0">{
+                _, err := addClient(db, client)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Println("Ошибка при добавлении клиента:", err)
+                }</span>
+        }
+
+        // Добавляем 5 деталей
+        <span class="cov0" title="0">parts := []models.Part{
+                {Name: "Шина", Description: "Летняя шина", Price: 5000.00},
+                {Name: "Аккумулятор", Description: "Аккумулятор 60 Ач", Price: 8000.00},
+                {Name: "Фильтр масляный", Description: "Фильтр масляный для автомобиля", Price: 500.00},
+                {Name: "Фильтр воздушный", Description: "Фильтр воздушный для автомобиля", Price: 300.00},
+                {Name: "Свеча зажигания", Description: "Свеча зажигания для автомобиля", Price: 200.00},
+        }
+        for _, part := range parts </span><span class="cov0" title="0">{
+                _, err := addPart(db, part)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Println("Ошибка при добавлении детали:", err)
+                }</span>
+        }
+
+        // Добавляем 5 заказов
+        <span class="cov0" title="0">orders := []models.Order{
+                {ClientID: 1, PartID: 1, Quantity: 2, TotalCost: 10000.00},
+                {ClientID: 2, PartID: 2, Quantity: 1, TotalCost: 8000.00},
+                {ClientID: 3, PartID: 3, Quantity: 4, TotalCost: 2000.00},
+                {ClientID: 4, PartID: 4, Quantity: 3, TotalCost: 900.00},
+                {ClientID: 5, PartID: 5, Quantity: 5, TotalCost: 1000.00},
+        }
+        for _, order := range orders </span><span class="cov0" title="0">{
+                _, err := addOrder(db, order)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Println("Ошибка при добавлении заказа:", err)
+                }</span>
+        }
+
+        <span class="cov0" title="0">fmt.Println("База данных успешно заполнена шаблонными данными.")</span>
+}
+
+func addClient(db *sql.DB, client models.Client) (int, error) <span class="cov0" title="0">{
+        res, err := db.Exec("INSERT INTO clients (last_name, first_name, middle_name, phone) VALUES (?, ?, ?, ?)", client.LastName, client.FirstName, client.MiddleName, client.Phone)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov0" title="0">id, err := res.LastInsertId()
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov0" title="0">return int(id), nil</span>
+}
+
+func addPart(db *sql.DB, part models.Part) (int, error) <span class="cov0" title="0">{
+        res, err := db.Exec("INSERT INTO parts (name, description, price) VALUES (?, ?, ?)", part.Name, part.Description, part.Price)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov0" title="0">id, err := res.LastInsertId()
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov0" title="0">return int(id), nil</span>
+}
+
+func addOrder(db *sql.DB, order models.Order) (int, error) <span class="cov0" title="0">{
+        res, err := db.Exec("INSERT INTO orders (client_id, part_id, quantity, total_cost) VALUES (?, ?, ?, ?)", order.ClientID, order.PartID, order.Quantity, order.TotalCost)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov0" title="0">id, err := res.LastInsertId()
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov0" title="0">return int(id), nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package handlers
+
+import (
+        "autoservice/internal/models"
+        "autoservice/internal/utils"
+        "database/sql"
+        "fmt"
+        "log"
+)
+
+func AddClientMenu(db *sql.DB) <span class="cov0" title="0">{
+        var lastName, firstName, middleName, phone string
+
+        for </span><span class="cov0" title="0">{
+                fmt.Println("Введите фамилию клиента:")
+                fmt.Scanln(&amp;lastName)
+                if !utils.IsValidName(lastName) </span><span class="cov0" title="0">{
+                        fmt.Println("Фамилия должна начинаться с заглавной буквы. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                fmt.Println("Введите имя клиента:")
+                fmt.Scanln(&amp;firstName)
+                if !utils.IsValidName(firstName) </span><span class="cov0" title="0">{
+                        fmt.Println("Имя должно начинаться с заглавной буквы. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                fmt.Println("Введите отчество клиента:")
+                fmt.Scanln(&amp;middleName)
+                if !utils.IsValidName(middleName) </span><span class="cov0" title="0">{
+                        fmt.Println("Отчество должно начинаться с заглавной буквы. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                fmt.Println("Введите телефон клиента:")
+                fmt.Scanln(&amp;phone)
+                if !utils.IsValidPhone(phone) </span><span class="cov0" title="0">{
+                        fmt.Println("Номер телефона должен начинаться с цифры '8' и состоять только из цифр. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">client := models.Client{LastName: lastName, FirstName: firstName, MiddleName: middleName, Phone: phone}
+        _, err := addClient(db, client)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">fmt.Println("Клиент успешно добавлен.")</span>
+}
+
+func addClient(db *sql.DB, client models.Client) (int, error) <span class="cov8" title="1">{
+        res, err := db.Exec("INSERT INTO clients (last_name, first_name, middle_name, phone) VALUES (?, ?, ?, ?)", client.LastName, client.FirstName, client.MiddleName, client.Phone)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">id, err := res.LastInsertId()
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">return int(id), nil</span>
+}
+
+func DeleteClientMenu(db *sql.DB) <span class="cov0" title="0">{
+        var id int
+        fmt.Println("Введите ID клиента для удаления:")
+        fmt.Scanln(&amp;id)
+
+        err := deleteClient(db, id)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">fmt.Println("Клиент успешно удален.")</span>
+}
+
+func deleteClient(db *sql.DB, id int) error <span class="cov8" title="1">{
+        _, err := db.Exec("DELETE FROM clients WHERE id = ?", id)
+        return err
+}</span>
+
+func PrintClients(db *sql.DB) <span class="cov0" title="0">{
+        rows, err := db.Query("SELECT id, last_name, first_name, middle_name, phone FROM clients")
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        fmt.Println("Клиенты:")
+        for rows.Next() </span><span class="cov0" title="0">{
+                var client models.Client
+                err := rows.Scan(&amp;client.ID, &amp;client.LastName, &amp;client.FirstName, &amp;client.MiddleName, &amp;client.Phone)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Println(err)
+                        return
+                }</span>
+                <span class="cov0" title="0">fmt.Printf("ID: %d, Фамилия: %s, Имя: %s, Отчество: %s, Телефон: %s\n", client.ID, client.LastName, client.FirstName, client.MiddleName, client.Phone)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package handlers
+
+import (
+        "autoservice/internal/models"
+        "autoservice/internal/utils"
+        "database/sql"
+        "fmt"
+        "log"
+)
+
+func AddOrderMenu(db *sql.DB) <span class="cov0" title="0">{
+        var clientID, partID, quantity int
+
+        for </span><span class="cov0" title="0">{
+                fmt.Println("Введите ID клиента:")
+                fmt.Scanln(&amp;clientID)
+                if !utils.IsValidID(clientID) </span><span class="cov0" title="0">{
+                        fmt.Println("ID клиента должно быть положительным целым числом. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                fmt.Println("Введите ID детали:")
+                fmt.Scanln(&amp;partID)
+                if !utils.IsValidID(partID) </span><span class="cov0" title="0">{
+                        fmt.Println("ID детали должно быть положительным целым числом. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                fmt.Println("Введите количество:")
+                fmt.Scanln(&amp;quantity)
+                if !utils.IsValidQuantity(quantity) </span><span class="cov0" title="0">{
+                        fmt.Println("Количество деталей должно быть положительным целым числом. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">var totalCost float64
+        err := db.QueryRow("SELECT price FROM parts WHERE id = ?", partID).Scan(&amp;totalCost)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">totalCost *= float64(quantity)
+
+        order := models.Order{ClientID: clientID, PartID: partID, Quantity: quantity, TotalCost: totalCost}
+        _, err = addOrder(db, order)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">fmt.Println("Заказ успешно добавлен.")</span>
+}
+
+func addOrder(db *sql.DB, order models.Order) (int, error) <span class="cov8" title="1">{
+        res, err := db.Exec("INSERT INTO orders (client_id, part_id, quantity, total_cost) VALUES (?, ?, ?, ?)", order.ClientID, order.PartID, order.Quantity, order.TotalCost)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">id, err := res.LastInsertId()
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">return int(id), nil</span>
+}
+
+func DeleteOrderMenu(db *sql.DB) <span class="cov0" title="0">{
+        var id int
+        fmt.Println("Введите ID заказа для удаления:")
+        fmt.Scanln(&amp;id)
+
+        err := deleteOrder(db, id)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">fmt.Println("Заказ успешно удален.")</span>
+}
+
+func deleteOrder(db *sql.DB, id int) error <span class="cov8" title="1">{
+        _, err := db.Exec("DELETE FROM orders WHERE id = ?", id)
+        return err
+}</span>
+
+func PrintOrders(db *sql.DB) <span class="cov0" title="0">{
+        rows, err := db.Query("SELECT id, client_id, part_id, quantity, total_cost FROM orders")
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        fmt.Println("Заказы:")
+        for rows.Next() </span><span class="cov0" title="0">{
+                var order models.Order
+                err := rows.Scan(&amp;order.ID, &amp;order.ClientID, &amp;order.PartID, &amp;order.Quantity, &amp;order.TotalCost)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Println(err)
+                        return
+                }</span>
+                <span class="cov0" title="0">fmt.Printf("ID: %d, Клиент ID: %d, Деталь ID: %d, Количество: %d, Общая стоимость: %.2f\n", order.ID, order.ClientID, order.PartID, order.Quantity, order.TotalCost)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package handlers
+
+import (
+        "autoservice/internal/models"
+        "autoservice/internal/utils"
+        "database/sql"
+        "fmt"
+        "log"
+)
+
+func AddPartMenu(db *sql.DB) <span class="cov0" title="0">{
+        var name, description string
+        var price float64
+
+        for </span><span class="cov0" title="0">{
+                fmt.Println("Введите название детали:")
+                fmt.Scanln(&amp;name)
+                if !utils.IsValidName(name) </span><span class="cov0" title="0">{
+                        fmt.Println("Название детали должно начинаться с заглавной буквы. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                fmt.Println("Введите описание детали:")
+                fmt.Scanln(&amp;description)
+                if !utils.IsValidName(description) </span><span class="cov0" title="0">{
+                        fmt.Println("Описание детали должно начинаться с заглавной буквы. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                fmt.Println("Введите цену детали:")
+                fmt.Scanln(&amp;price)
+                if !utils.IsValidPrice(price) </span><span class="cov0" title="0">{
+                        fmt.Println("Цена детали должна быть положительным числом. Пожалуйста, введите данные заново.")
+                        continue</span>
+                }
+                <span class="cov0" title="0">break</span>
+        }
+
+        <span class="cov0" title="0">part := models.Part{Name: name, Description: description, Price: price}
+        _, err := addPart(db, part)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">fmt.Println("Деталь успешно добавлена.")</span>
+}
+
+func addPart(db *sql.DB, part models.Part) (int, error) <span class="cov8" title="1">{
+        res, err := db.Exec("INSERT INTO parts (name, description, price) VALUES (?, ?, ?)", part.Name, part.Description, part.Price)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">id, err := res.LastInsertId()
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">return int(id), nil</span>
+}
+
+func DeletePartMenu(db *sql.DB) <span class="cov0" title="0">{
+        var id int
+        fmt.Println("Введите ID детали для удаления:")
+        fmt.Scanln(&amp;id)
+
+        err := deletePart(db, id)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">fmt.Println("Деталь успешно удалена.")</span>
+}
+
+func deletePart(db *sql.DB, id int) error <span class="cov8" title="1">{
+        _, err := db.Exec("DELETE FROM parts WHERE id = ?", id)
+        return err
+}</span>
+
+func PrintParts(db *sql.DB) <span class="cov0" title="0">{
+        rows, err := db.Query("SELECT id, name, description, price FROM parts")
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println(err)
+                return
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        fmt.Println("Детали:")
+        for rows.Next() </span><span class="cov0" title="0">{
+                var part models.Part
+                err := rows.Scan(&amp;part.ID, &amp;part.Name, &amp;part.Description, &amp;part.Price)
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Println(err)
+                        return
+                }</span>
+                <span class="cov0" title="0">fmt.Printf("ID: %d, Название: %s, Описание: %s, Цена: %.2f\n", part.ID, part.Name, part.Description, part.Price)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package utils
+
+import (
+        "regexp"
+        "unicode"
+)
+
+// IsValidName проверяет, что строка начинается с заглавной буквы
+func IsValidName(name string) bool <span class="cov8" title="1">{
+        if len(name) == 0 </span><span class="cov8" title="1">{
+                return false
+        }</span>
+        <span class="cov8" title="1">firstChar := []rune(name)[0]
+        return unicode.IsUpper(firstChar)</span>
+}
+
+// IsValidPhone проверяет, что номер телефона начинается с цифры "8" и состоит только из цифр
+func IsValidPhone(phone string) bool <span class="cov8" title="1">{
+        re := regexp.MustCompile(`^8\d{10}$`)
+        return re.MatchString(phone)
+}</span>
+
+// IsValidPrice проверяет, что цена является положительным числом
+func IsValidPrice(price float64) bool <span class="cov8" title="1">{
+        return price &gt; 0
+}</span>
+
+// IsValidQuantity проверяет, что количество является положительным целым числом
+func IsValidQuantity(quantity int) bool <span class="cov8" title="1">{
+        return quantity &gt; 0
+}</span>
+
+// IsValidID проверяет, что ID является положительным целым числом
+func IsValidID(id int) bool <span class="cov8" title="1">{
+        return id &gt; 0
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
